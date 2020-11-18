@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'feedapp-root',
@@ -15,7 +16,7 @@ export class AppComponent implements OnInit{
   title = '';
   showError = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private spinner: NgxSpinnerService) {}
 
   ngOnInit() {
     this.getNews('');
@@ -30,9 +31,11 @@ export class AppComponent implements OnInit{
     }
   }
 
-  callApi(title, queryParams) { 
+  callApi(title, queryParams) {
+    this.spinner.show(); 
     this.title = title;
     this.getUrl(queryParams).subscribe(res => {
+      this.spinner.hide();
       this.articles = res['articles'];
       if(this.articles.length === 0){
         this.showError = true;
@@ -41,8 +44,10 @@ export class AppComponent implements OnInit{
   }
   
   queryNews(query) { 
+    this.spinner.show(); 
     this.title = "News regarding '" + query + "...'";
     return this.http.get(this.SEARCH_NEWS_URL + query).subscribe(res => {
+      this.spinner.hide();
       this.articles = res['articles'];
       if(this.articles.length === 0){
         this.showError = true;
